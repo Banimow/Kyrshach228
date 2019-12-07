@@ -145,14 +145,15 @@ export class Menu {
     }
   }
 
-  public static askUser(questions: { name: string, question: string, type: any }[]) {
+  public static askUser(questions: { name: string | any, question: string, type: any, max?: number }[]) {
     return prompts(questions.map( (question, index) => (
       {
         type: question.type,
         name: question.name,
         message: question.question,
         separator: ';',
-        initial: ''
+        initial: '',
+        validate: value => (value > <number>question.max && question.max) ? `Value: (${value}) not found! Try again)` : true
       }
     ) ));
   }

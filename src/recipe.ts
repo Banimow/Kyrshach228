@@ -50,4 +50,4 @@ class Recipe implements RecipeDetails {
   }
 }
 
-export { RecipeIngredient, Recipe }
+export { RecipeIngredient, Recipe, RecipeDetails }

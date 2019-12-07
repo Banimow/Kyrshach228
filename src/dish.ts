@@ -25,4 +25,4 @@ class Dish extends Recipe {
   }
 }
 
-export { Dish, Ingredient };
+export { Dish, Ingredient, DishDetails };

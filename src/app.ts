@@ -1,7 +1,10 @@
-import { Recipe, RecipeIngredient } from "./recipe";
+import { Dish, Ingredient } from "./dish";
 import { Menu, Window, QuestionTypes } from "./menu";
 
-let borschRecipe = new Recipe({
+let currentDishIndex: number = 0;
+
+let borsch = new Dish({
+  price: 100,
   recipe: [
     "Prepare all the ingredients. Put the beet in a small saucepan, cover with water (the water should completely cover the beet) and boil until cooked.",
     "Take a medium sized saucepan, put a piece of beef (preferably use a piece of beef with bone) in it and cover with water. The water should completely cover the beef, while it is boiling. The water should completely cover the beef. Skim it when it starts to boil. Then reduce heat and simmer for an hour and a half without a lid. At the end add some salt. If you wish, you can add spices or a little vinegar to get rid of the peculiar smell of boiled meat.",
@@ -13,7 +16,8 @@ let borschRecipe = new Recipe({
   description: "Serve with sour cream and bread."
 });
 
-let cofeeRecipe = new Recipe({
+let cofee = new Dish({
+  price: 45,
   recipe: [
     "put coffe in the cup.",
     "pour hot water."
@@ -22,27 +26,15 @@ let cofeeRecipe = new Recipe({
   description: "Simple cofee recipe"
 });
 
-const recipts: Recipe[] = [
-  borschRecipe,
-  cofeeRecipe
+const dishes: Dish[] = [
+  borsch,
+  cofee
 ];
-
-const showRecipe = (recipe: Recipe) => {
-  console.log(recipe.recipeText);
-};
-
-const addIngredient = (recipe: Recipe, ingredient: RecipeIngredient) => {
-  recipe.addIngredient(ingredient);
-};
-
-const changeDescription = (recipe: Recipe, description: string) => {
-  recipe.changeDescription(description);
-};
 
 const menu = new Menu();
 
 menu.addWindow(new Window(
-  "main",
+  "main menu",
   {
     onCreate: () => {
       Menu.clear();
@@ -53,39 +45,203 @@ menu.addWindow(new Window(
   [
     {
       description: "Show recipts",
-      command: () => { menu.use("recipts"); }
+      command: () => { menu.use("dishes"); }
+    },
+    {
+      description: "Sell dishes",
+      command: () => { menu.use("sell dish"); }
+    },
+    {
+      description: "Exit",
+      command: () => { Menu.clear(); }
     }
   ]
 ));
 
 menu.addWindow(new Window(
-  "recipts",
+  "sell dish",
   {
     onCreate: () => {
       Menu.clear();
-      Menu.write("Recipts\n");
-      Menu.write(recipts.map((recipe, index) => `${index + 1}. ${recipe.title}`).join('\n'));
+      Menu.write("Sell Dishes\n");
+      Menu.write(dishes.map((dish, index) => `${index + 1}. ${dish.title}`).join('\n'));
+    }
+  },
+  [
+    {
+      description: "sell dish",
+      command: () => {
+        Menu
+          .askUser([
+            { max: dishes.length, name: "dishIndex", question: "Dish #:", type: QuestionTypes.NUMBER },
+            { name: "dishCount", question: "How many dish?", type: QuestionTypes.NUMBER }
+          ])
+          .then( ({ dishIndex, dishCount } ) => {
+            Menu.write(`Total price: ${dishes[dishIndex - 1].sell(dishCount)}`);
+            setTimeout(() => {
+              menu.use("main menu");
+            }, 3000);
+          });
+      }
+    },
+    {
+      description: "back to dishes",
+      command: () => { menu.use("dishes"); }
+    },
+    {
+      description: "main menu",
+      command: () => { menu.use("main menu"); }
+    }
+  ]
+));
+
+menu.addWindow(new Window(
+  "dishes",
+  {
+    onCreate: () => {
+      Menu.clear();
+      Menu.write("Dishes\n");
+      Menu.write(dishes.map((dish, index) => `${index + 1}. ${dish.title}`).join('\n'));
     },
     onUpdate: () => { Menu.clear(); }
   },
   [
     {
-      description: "Show recipe",
-      command: () => { menu.use("recipts"); }
+      description: "Show dish",
+      command: () => {
+        Menu.write(dishes.map((dish, index) => `${index + 1}. ${dish.title}`).join('\n'));
+        Menu
+          .askUser([{ max: dishes.length, name: "value", question: "What dish you interested?", type: QuestionTypes.NUMBER }])
+          .then( ({ value: dishIndex} ) => {
+            currentDishIndex = dishIndex - 1;
+            menu.use("dish recipe");
+          });
+      }
     },
     {
-      description: "Edit recipe",
-      command: () => { menu.use("recipts"); }
+      description: "Edit dish",
+      command: () => {
+        Menu.write(dishes.map((dish, index) => `${index + 1}. ${dish.title}`).join('\n'));
+        Menu
+          .askUser([{ max: dishes.length, name: "value", question: "What dish you interested?", type: QuestionTypes.NUMBER }])
+          .then( ({ value: dishIndex} ) => {
+            currentDishIndex = dishIndex - 1;
+            menu.use("dish edit");
+          });
+      }
     },
     {
-      description: "Add recipe",
-      command: () => { menu.use("recipts"); }
+      description: "Add dish",
+      command: () => {
+        menu.use("dish creation");
+      }
     },
     {
-      description: "Remove recipe",
-      command: () => { menu.use("recipts"); }
+      description: "Remove dish",
+      command: () => {
+        Menu.write(dishes.map((dish, index) => `${index + 1}. ${dish.title}`).join('\n'));
+        Menu
+          .askUser([{ max: dishes.length, name: "value", question: "What dish you interested?", type: QuestionTypes.NUMBER }])
+          .then( ({ value: dishIndex} ) => {
+            currentDishIndex = 0;
+            dishes.splice(dishIndex - 1, 1);
+            menu.use("dishes");
+          });
+      }
+    },
+    {
+      description: "main menu",
+      command: () => { menu.use("main menu"); }
     }
   ]
 ));
 
-menu.use("main");
+menu.addWindow(new Window(
+  "dish recipe",
+  {
+    onCreate: () => {
+      Menu.clear();
+      Menu.write(`${dishes[currentDishIndex].title} recipe\n`);
+      Menu.write(dishes[currentDishIndex].recipeText);
+    }
+  },
+  [
+    {
+      description: "back to dishes",
+      command: () => { menu.use("dishes"); }
+    },
+    {
+      description: "main menu",
+      command: () => { menu.use("main menu"); }
+    }
+  ]
+));
+
+menu.addWindow(new Window(
+  "dish edit",
+  {
+    onCreate: () => {
+      Menu.clear();
+      Menu.write(`${dishes[currentDishIndex].title} recipe\n`);
+      Menu.write(dishes[currentDishIndex].recipeText);
+    }
+  },
+  [
+    {
+      description: "enter new description",
+      command: () => {
+        Menu
+          .askUser([{ name: "value", question: "New recipe:", type: QuestionTypes.STRING }])
+          .then( ({ value: newRecipeDescription} ) => {
+            dishes[currentDishIndex].changeDescription(newRecipeDescription);
+            menu.use("dish recipe");
+          });
+      }
+    },
+    {
+      description: "back to dishes",
+      command: () => { menu.use("dishes"); }
+    },
+    {
+      description: "main menu",
+      command: () => { menu.use("main menu"); }
+    }
+  ]
+));
+
+menu.addWindow(new Window(
+  "dish creation",
+  {
+    onCreate: () => {
+      Menu.clear();
+    }
+  },
+  [
+    {
+      description: "enter new dish details",
+      command: () => {
+        Menu
+          .askUser([
+            { name: "title", question: "Title:", type: QuestionTypes.STRING},
+            { name: "price", question: "Price:", type: QuestionTypes.NUMBER},
+            { name: "description", question: "Description:", type: QuestionTypes.STRING},
+            { name: "recipe", question: "All recipes parts (';' is separator):", type: QuestionTypes.LIST}
+          ])
+          .then( (newDishDetails: any) => {
+            dishes.push(new Dish(newDishDetails));
+            menu.use("dishes");
+          });
+      }
+    },
+    {
+      description: "back to dishes",
+      command: () => { menu.use("dishes"); }
+    },
+    {
+      description: "main menu",
+      command: () => { menu.use("main menu"); }
+    }
+  ]
+));
+
+menu.use("main menu");
