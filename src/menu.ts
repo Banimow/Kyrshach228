@@ -77,6 +77,7 @@ export class Menu {
   constructor() {}
 
   private async askUser(message: string, max: number) {
+    console.log("\n---ANSWER--------------------------------------\n");
     console.log(message);
 
     const answer = await prompts({
