@@ -1,7 +1,7 @@
 import prompts from "prompts";
 
 export class QuestionTypes {
-  static STRING: any = 'string';
+  static STRING: any = 'text';
   static NUMBER: any = 'number';
 };
 
