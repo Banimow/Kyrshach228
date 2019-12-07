@@ -1,0 +1,20 @@
+{
+  "name": "oop",
+  "version": "1.0.0",
+  "description": "simple cofe shop app with OOP",
+  "main": "index.js",
+  "scripts": {
+    "start": "node dist/app.js",
+    "build": "tsc"
+  },
+  "keywords": [
+    "oop",
+    "cofee"
+  ],
+  "author": "boris poperechniy",
+  "license": "MIT",
+  "dependencies": {
+    "@types/prompts": "^2.0.3",
+    "prompts": "^2.3.0"
+  }
+}
