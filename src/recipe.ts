@@ -23,12 +23,12 @@ class Recipe implements RecipeDetails {
   get recipeText(): string {
     return `Ingredients:\n${this.ingredients.map((ingredient, ingredientIndex) => {
         switch (ingredient.type) {
-          case 'liquid': return `${ingredientIndex + 1}) ${ingredient.count} ml ${ingredient.name} (${ingredient.additionalState})`;
-          case 'cereal': return `${ingredientIndex + 1}) ${ingredient.weight} g ${ingredient.name} (${ingredient.additionalState})`;
-          case 'holistic': return `${ingredientIndex + 1}) ${ingredient.count} ${ingredient.name} (${ingredient.additionalState})`;
+          case 'liquid': return `${ingredientIndex + 1}) ${ingredient.count} ml ${ingredient.name} ${ingredient.additionalState ? `(${ingredient.additionalState})` : ''}`;
+          case 'cereal': return `${ingredientIndex + 1}) ${ingredient.weight} g ${ingredient.name} ${ingredient.additionalState ? `(${ingredient.additionalState})` : ''}`;
+          case 'holistic': return `${ingredientIndex + 1}) ${ingredient.count} ${ingredient.name} ${ingredient.additionalState ? `(${ingredient.additionalState})` : ''}`;
           default: return `${ingredientIndex + 1}) ${ingredient.name} to taste`;
         }
-      }).join('\n\n')}\nRecipe:\n${this.recipe.map((recipePart, recipePartIndex) => (
+      }).join('\n\n')}\n\nRecipe:\n${this.recipe.map((recipePart, recipePartIndex) => (
         `${recipePartIndex + 1}) ${recipePart}`
       )).join('\n\n')}
     `;
