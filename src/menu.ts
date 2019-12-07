@@ -3,6 +3,7 @@ import prompts from "prompts";
 export class QuestionTypes {
   static STRING: any = 'text';
   static NUMBER: any = 'number';
+  static LIST: any = 'list';
 };
 
 export interface WindowCommand {
@@ -144,12 +145,16 @@ export class Menu {
     }
   }
 
-  public static askUser(question: string, type: any, ) {
-    return prompts({
-      type: type,
-      name: 'value',
-      message: question
-    });
+  public static askUser(questions: { name: string, question: string, type: any }[]) {
+    return prompts(questions.map( (question, index) => (
+      {
+        type: question.type,
+        name: question.name,
+        message: question.question,
+        separator: ';',
+        initial: ''
+      }
+    ) ));
   }
 
   public static clear() {
