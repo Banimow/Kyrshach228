@@ -1,0 +1,5 @@
+ Course work on "Creating a kiosk management system for coffee sales"
+ Made by a student of the KN-313 group
+ Poperechnyi Boris
+ Not for yarn
+ 2019 year
